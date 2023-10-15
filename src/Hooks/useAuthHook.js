@@ -3,7 +3,8 @@ import { useEffect, useState,useRef } from "react";
 
 export const useAuthHook = () => {
     const [loggedIn, setLoggedIn] = useState(false);
-    const [logDet, setLogDet] = useState(false);
+    const [logDet, setLogDet] = useState(false); 
+    //test
 
     const [checkingStatus, setCheckingStatus] = useState(true);
     const isMounted = useRef(true);
