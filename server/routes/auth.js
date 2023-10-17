@@ -18,7 +18,7 @@ const router = express.Router();
 //         username: admin.username
 //     })
 // });
-router.get("/me", authenticateJwt, async (req, res) => {
+router.get("/userdet", authenticateJwt, async (req, res) => {
   console.log(req.user.name);
     const user = await User.findOne({ name: req.user.name });
     if (!user) {
