@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme)=>({
     }
   },
   blueText: {
-    color: '#0052CC'
+    color: '#4a9053'
   },
   titleText:{
     display: 'flex',

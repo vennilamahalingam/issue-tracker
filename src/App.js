@@ -16,6 +16,7 @@ import GridTemplate from "./components/GridTemplate";
 import { useDispatch } from "react-redux";
 import { updateUser } from "./actions";
 import ForgotPassword from "./pages/ForgotPassword";
+import axios from "axios";
 
 
 
@@ -34,25 +35,22 @@ const App = () => {
   const isMounted = useRef(true);
 
   useEffect(()=>{
-      if(isMounted)
-      {
-          const auth  = getAuth();
-      
-          onAuthStateChanged(auth,(user) => {
-                  if(user)
-                  {
-                      dispatch(updateUser({displayName: user.displayName, role: user.photoURL, email: user.email, id: user.uid}));
-                      // setUserDet({displayName: user.displayName, role: user.photoURL, email: user.email, id: user.uid});
-                  }
-                    
-              }
-          )
-      }
-      return ()=>{isMounted.current = false}
-  },[isMounted])
+    const authToken = localStorage.getItem("token");
+    if(authToken)
+    {
+        axios.get("http://localhost:3000/auth/me",{headers: {'Authorization' : authToken}}).then(({data})=>{
+          const {name, email, role, _id} = data;
+            dispatch(updateUser({
+              displayName: name,
+              email: email,
+              'role': role,
+              id: _id
+          }));
+        })
+    }
+  },[]);
   return (
       <>
-     
         <Router>
           <Routes>
                 <Route path='/profile/*'>

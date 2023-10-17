@@ -41,7 +41,7 @@ function Ticket()
       alignItems: 'center',
       justifyContent: 'center',
       color: '#fff',
-      backgroundColor: '#0052CC',
+      backgroundColor: '#4a9053',
       borderRadius: '5px'
     },
     'tableContainer': {
@@ -126,9 +126,9 @@ function Ticket()
       fontSize: '13px',
     },
     'statusText': {
-      color: '#0052CC',
+      color: '#4a9053',
       width: 'auto',
-      border: '1px solid #0052CC',
+      border: '1px solid #4a9053',
       paddingRight: '10px',
       fontSize: '15px',
       height: '20px',
@@ -146,7 +146,7 @@ function Ticket()
      
     },
     'blueText': {
-      color: '#0052CC'
+      color: '#4a9053'
     },
     'detailsBtn': {
         display: 'flex',

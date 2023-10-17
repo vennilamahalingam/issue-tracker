@@ -75,7 +75,7 @@ function CreateTicket({handleShowCreateTicket, ticketDetails})
             alignItems: 'center',
             justifyContent: 'center',
             color: '#fff',
-            backgroundColor: '#0052CC',
+            backgroundColor: '#4a9053',
             borderRadius: '5px'
             },
             'tableTitleText' :{

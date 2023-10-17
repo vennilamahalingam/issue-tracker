@@ -10,6 +10,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import {useNavigate, useParams} from "react-router-dom";
+import axios from "axios";
 
 function CreateProject({handleCreateProject, projectData, teamDetails})
 {
@@ -18,17 +19,18 @@ function CreateProject({handleCreateProject, projectData, teamDetails})
     const params = useParams();
     const [isEditPage, setIsEditPage] = useState(params.edit);
     const getUsers = () => {
-        const userRef = collection(db,"users");
-        const pq = query(userRef);
-        let users = [];
-        getDocs(pq).then((snap) => {
-            snap.forEach((doc) => {
-              return users.push({data : doc.data(), id: doc.id});
-            })
-            setUsers(users);
-        });
+        const authToken = localStorage.getItem("token");
+
+        axios.get("http://localhost:3000/auth/getAllUsers/", {headers: {'Authorization' : authToken}})
+        .then(({data}) => {
+            setUsers(data.users);
+            console.log(data);
+        })
+        .catch((error) => console.log(error));
+            
       }
       useEffect(()=>{
+        console.log("effect")
             getUsers();
       },[]);
     const {projectName, description} = projectData ? projectData.data : "";
@@ -94,7 +96,7 @@ function CreateProject({handleCreateProject, projectData, teamDetails})
             alignItems: 'center',
             justifyContent: 'center',
             color: '#fff',
-            backgroundColor: '#0052CC',
+            backgroundColor: '#4a9053',
             borderRadius: '5px'
             },
             'tableTitleText' :{
@@ -135,22 +137,10 @@ function CreateProject({handleCreateProject, projectData, teamDetails})
             projectName: name,
             manager: team,
             description: desc,
-            team: [team,...dev,...qa],
+            developer: dev,
+            submitter: qa,
         };
-        let docRef = ""; 
-        if(projectData)
-        {
-            let docReference = doc(db, "projects", projectData.id);
-            await updateDoc(docReference, formData);
-            handleCreateProject(false);
-        }
-        else
-        {
-            formData.tickets = [];
-            docRef = await addDoc(collection(db,"projects"),formData);
-            navigate(`/projects/${docRef.id}`);
-        }
-        
+        console.log(formData);
       }
       const handleQaChange = (event) => {
         const { options } = event.target;
@@ -206,9 +196,9 @@ function CreateProject({handleCreateProject, projectData, teamDetails})
                             onChange={handleUserChange}
                             label="Age"
                             >
-                                {users.map((user, index) => (
-                                user.data.role === "project manager" && <MenuItem value={user.id}>
-                                {user.data.name}
+                                {users?.map((user, index) => (
+                                user.role === "project manager" && <MenuItem value={user.id}>
+                                {user.name}
                                 </MenuItem>
                             ))}
                             </Select>
@@ -229,8 +219,8 @@ function CreateProject({handleCreateProject, projectData, teamDetails})
                             }}
                             >
                             {users.map((user, index) => (
-                                user.data.role === "developer" && <option value={user.id} data-key={user.id}>
-                                {user.data.name}
+                                user.role === "developer" && <option value={user.id} data-key={user.id}>
+                                {user.name}
                                 </option>
                             ))}
                             </Select>
@@ -251,8 +241,8 @@ function CreateProject({handleCreateProject, projectData, teamDetails})
                             }}
                             >
                             {users.map((user, index) => (
-                                user.data.role === "qa" && <option value={user.id} data-key={user.id}>
-                                {user.data.name}
+                                user.role === "qa" && <option value={user._id} data-key={user._id}>
+                                {user.name}
                                 </option>
                             ))}
                             </Select>

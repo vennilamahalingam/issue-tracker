@@ -13,6 +13,7 @@ import '../Style/projectList.css';
 import {Link, useParams} from  "react-router-dom";
 import {makeStyles} from "@material-ui/core/styles";
 import CreateProject from './CreateProject';
+import axios from 'axios';
 function ProjectList() 
 {
   const [projects, setProjects] = useState([ ]);
@@ -46,7 +47,7 @@ function ProjectList()
       alignItems: 'center',
       justifyContent: 'center',
       color: '#fff',
-      backgroundColor: '#0052CC',
+      backgroundColor: '#4a9053',
       borderRadius: '5px'
     },
     'tableTitleText' :{
@@ -59,24 +60,12 @@ function ProjectList()
  
   const classes = useStyles();
   useEffect(() => {
+    const authToken = localStorage.getItem("token");
     const getProjects = () => {
-      const projectRef = collection(db,"projects");
-      const pq = query(projectRef)
-      getDocs(pq).then((pquerySnap)=>{
-        pquerySnap.forEach((returnedDoc)=>{
-             getDoc(doc(db, "users", returnedDoc.data().manager)).then((snap)=>{
-             setProjects((prev)=> [...prev, {
-              id: returnedDoc.id,
-              data: returnedDoc.data(),
-              manager: snap.data()
-             }]);
-            })
-            
-        });
-
-       });
-      
-       
+      axios.get("http://localhost:3000/projects",{headers: {'Authorization' : authToken}}).then(({data})=>{
+        const {projects} = data
+        setProjects(projects);
+      }).catch((error) => console.log(error));
     }
     getProjects();
   },[]);
@@ -111,9 +100,9 @@ function ProjectList()
 
                   >
                     
-                      <TableCell align="left" className='projectName'><Link to={`/projects/${project.id}`} >{project.data?.projectName}</Link></TableCell>
+                      <TableCell align="left" className='projectName'><Link to={`/projects/${project.id}`} >{project.projectName}</Link></TableCell>
                     
-                    <TableCell align="left">{project.data?.description}</TableCell>
+                    <TableCell align="left">{project.description}</TableCell>
                     <TableCell align="left">{project.manager?.name}</TableCell>
 
                   </TableRow>

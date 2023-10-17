@@ -9,6 +9,7 @@ import { TextField } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "../actions";
 import OAuth from "../components/OAuth";
+import axios from "axios";
 
 
 const SignIn = () =>
@@ -28,33 +29,24 @@ const SignIn = () =>
         setShowError(false);
         setFormData((prevValue)=>({...prevValue, [e.target.id]: e.target.value}))
     }
-    async function onSubmit (demoEmail, demoPassword)
-    {
-        try {
-            let loginEmail = demoEmail ? demoEmail : email; 
-            let loginPass = demoPassword ? demoPassword : password; 
+    async function onSubmit ()
+        {
+            axios.post('http://localhost:3000/auth/login', {  email,
+            password })
 
-            const auth = getAuth();
-            const userCredentials = await signInWithEmailAndPassword(auth, loginEmail,loginPass)
-            if(userCredentials.user)
-            {
-                navigate("/");
-                const authData = userCredentials.user;
-                const {displayName, photoURL, email} = authData;
-             
-                dispatch(updateUser({
-                    displayName,
-                    email,
-                    'role': photoURL,
-                    id: authData.uid,
-                }));
-                console.log(userCredentials.user);
-            }
-        } catch (error) {
-            console.log(error);
-            setShowError(true);
-            toast.error("Bad credentials!")
-        }
+            .then(response => {
+                console.log(response.data)
+                localStorage.setItem("token", "Bearer "+response.data.token);// Handle the response data
+                navigate("/")
+            })
+            .catch(error => {
+
+                console.error('Error:', error); // Handle any errors
+                setShowError(true);
+                toast.error("Bad credentials!")
+
+            });
+            
     }
     const handleDemoUser = () => {
         onSubmit('demouser@gmail.com', '123456');
@@ -69,7 +61,7 @@ const SignIn = () =>
                 </p>
             </header>
             <form className="formCont" >
-           {showError && <div className="badCreds">Bad credentials !</div>} 
+                {showError && <div className="badCreds">Bad credentials !</div>} 
 
                 <TextField
                 id="email"
@@ -95,7 +87,6 @@ const SignIn = () =>
                         Sign in with credentials
                 </div>
             </form>
-            <OAuth/>
 
             <div className="bottomLinks">
                 <div className="demoUserLink" onClick={handleDemoUser}>Sign in as a Demo User</div>

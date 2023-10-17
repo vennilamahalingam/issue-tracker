@@ -13,6 +13,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import CreateProject from './CreateProject';
 import "../Style/project.css";
 import { Box } from '@mui/system';
+import axios from 'axios';
 
 function Project() 
 {
@@ -100,7 +101,7 @@ function Project()
       alignItems: 'center',
       justifyContent: 'center',
       color: '#fff',
-      backgroundColor: '#0052CC',
+      backgroundColor: '#4a9053',
       borderRadius: '5px'
     },
   }));
@@ -110,42 +111,21 @@ function Project()
     setShowCreateProject(data)
   }
   
-  const params = useParams();
-const getProject = () => {
-    getDoc(doc(db, 'projects',params.projectid)).then((pquerySnap) => {
-        setProject({id:pquerySnap.id, data:pquerySnap.data()});
+    const params = useParams();
+    const getProject = () => {
+      const authToken = localStorage.getItem("token");
+    
+      axios.get("http://localhost:3000/projects/"+params.projectid, {headers: {'Authorization' : authToken}})
+      .then(({data})=>{
+        console.log(data.project);
+        setProject(data.project);
+      })
+      .catch((error) => console.log(error))
+    }
 
-        let projects = pquerySnap.data();
-        setTeam([])
-        projects.team.forEach((user)=>{
-            getDoc(doc(db, 'users', user)).then((snap)=>{
-            let team = {id: snap.id, data: snap.data()};
-              setTeam((prev) => [...prev, team]);
-            });
-        }); 
-    });
-}
-const getTickets = () => {
-  const ticketRef = collection(db,"ticketListing");
-  const pq = query(ticketRef)
-  setTickets([]);
-  getDocs(pq).then((pquerySnap)=>{
-    pquerySnap.forEach((returnedDoc)=>{
-        let ticketData = returnedDoc.data();
-        if(ticketData.projectId.id === params.projectid)
-        {
-          ticketData.id = returnedDoc.id;
-          setTickets((prev) => [...prev, ticketData]);
-        }
-    });
-
-   });
-   
-}
   useEffect(() => { 
     console.log("newcall is made")
   getProject();
-  getTickets();
 },[params.projectid, showCreateProject]);
 const timeStampToDate = (timeStamp) => {
   let date = new Date(timeStamp).toDateString();;
@@ -160,16 +140,16 @@ const timeStampToDate = (timeStamp) => {
     <div className={classes.projectDetContainer}> 
     <div className={classes.detailsContainer}>
       <div className={classes.detailsTitle}>
-        <div className='breadcrumb'>Projects / {project?.data?.projectName}</div> 
+        <div className='breadcrumb'>Projects / {project?.projectName}</div> 
         <div className='buttonCont'>
           <div className={classes.button} onClick={()=>handleCreateProject(true)}>Edit</div>
           <Link to={`/projects`}><div className={classes.button}>Back</div></Link>
         </div>
       </div>
-      <div className={classes.projectTitle}>{project?.data?.projectName}</div>
+      <div className={classes.projectTitle}>{project?.projectName}</div>
       <Box className= "topSection">
       <div className={classes.labelContainer}>
-        <div className={classes.labelPair}><div className={classes.spanText} >Description</div>{project?.data?.description}</div>
+        <div className={classes.labelPair}><div className={classes.spanText} >Description</div>{project?.description}</div>
       </div>
       <div className={classes.table}> 
           <div className={classes.spanText}>Assigned Personnel</div>
@@ -183,7 +163,7 @@ const timeStampToDate = (timeStamp) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {team?.map(({data}, index) => (
+                {project.team?.map((data, index) => (
                     <TableRow
                     key={index}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}

@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme)=>({
     color: "#fafbfc",
     height: "100vh",
     paddingTop: theme.spacing(5),
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.secondary.main,
     [theme.breakpoints.up("sm")] : {
       backgroundColor: "white",
       color:"#000",

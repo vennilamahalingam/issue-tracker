@@ -48,7 +48,7 @@
     align-items: center;
     justify-content: center;
     color: #fff;
-    background-color: #1a73e8;
+    background-color:#265e82;
     box-shadow: 5px 5px 10px #bab9b9;
     ;
 }
@@ -83,7 +83,7 @@
 .demoUserLink
 {
     text-decoration: underline;
-    color: #0052CC;
+    color: #4a9053;
 }
 .googleButton>svg
 {
